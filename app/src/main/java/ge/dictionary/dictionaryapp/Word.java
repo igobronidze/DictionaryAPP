@@ -10,6 +10,8 @@ public class Word {
 
     private int rank;
 
+    private int totalShows;
+
     public Word() {}
 
     public Word(String word, String explain, String translate) {
@@ -50,10 +52,11 @@ public class Word {
         this.rank = rank;
     }
 
-    public void setWord(Word word) {
-        this.word = word.getWord();
-        this.explain = word.getExplain();
-        this.translate = word.getTranslate();
-        this.rank = word.getRank();
+    public int getTotalShows() {
+        return totalShows;
+    }
+
+    public void setTotalShows(int totalShows) {
+        this.totalShows = totalShows;
     }
 }

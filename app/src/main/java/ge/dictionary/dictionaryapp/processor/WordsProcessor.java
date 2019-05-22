@@ -23,8 +23,14 @@ public class WordsProcessor {
         }
     }
 
-    public void increaseWordRank(Word word) {
+    public void increaseWordRankAndTotalShows(Word word) {
         word.setRank(word.getRank() + 1);
+        word.setTotalShows(word.getTotalShows() + 1);
+        WordsDataProcessor.save(words, file);
+    }
+
+    public void increaseWordTotalShows(Word word) {
+        word.setTotalShows(word.getTotalShows() + 1);
         WordsDataProcessor.save(words, file);
     }
 

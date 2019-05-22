@@ -50,36 +50,6 @@ public class MainActivity extends AppCompatActivity {
         wordsProcessor = new WordsProcessor(file);
         word  = wordsProcessor.getRandomWord();
 
-
-//        try {
-//            String content = "hello world";
-//            File file = null;
-//            FileOutputStream outputStream;
-//            file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "rame.txt");
-//            outputStream = new FileOutputStream(file);
-//            outputStream.write(content.getBytes());
-//            outputStream.close();
-//            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-//            String line = bufferedReader.readLine();
-//            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-//            alertDialog.setTitle("1");
-//            alertDialog.setMessage(line);
-//            alertDialog.show();
-
-//        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-//        alertDialog.setTitle("2");
-//        alertDialog.setMessage("" + file.exists());
-//        alertDialog.show();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-//            alertDialog.setTitle("1");
-//            alertDialog.setMessage("" + e.getMessage());
-//            alertDialog.show();
-//        }
-
-
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -91,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mode == WordViewMode.WORD_EXPLAIN_TRANSLATE) {
+                    wordsProcessor.increaseWordTotalShows(word);
                     word = wordsProcessor.getRandomWord();
                 }
 
@@ -104,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wordsProcessor.increaseWordRank(word);
+                wordsProcessor.increaseWordRankAndTotalShows(word);
 
                 mode = WordViewMode.WORD;
                 word = wordsProcessor.getRandomWord();

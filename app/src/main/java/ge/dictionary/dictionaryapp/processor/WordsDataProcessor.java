@@ -41,7 +41,8 @@ public class WordsDataProcessor {
 
     public static void save(List<Word> words, File file) {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             for (Word word : words) {
                 String line = marshallWord(word);
@@ -49,6 +50,7 @@ public class WordsDataProcessor {
             }
 
             bufferedWriter.close();
+            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,7 +62,8 @@ public class WordsDataProcessor {
         line += word.getWord() + SPACES + DELIMITER_FOR_WRITE + SPACES;
         line += word.getExplain() + SPACES + DELIMITER_FOR_WRITE + SPACES;
         line += word.getTranslate() + SPACES + DELIMITER_FOR_WRITE + SPACES;
-        line += word.getRank();
+        line += word.getRank() + SPACES + DELIMITER_FOR_WRITE + SPACES;
+        line += word.getTotalShows();
 
         return line;
     }
@@ -74,6 +77,11 @@ public class WordsDataProcessor {
         word.setTranslate(arr[2].trim());
         if (arr.length > 3) {
             word.setRank(Integer.valueOf(arr[3].trim()));
+        }
+        if (arr.length > 4) {
+            word.setTotalShows(Integer.valueOf(arr[4].trim()));
+        } else {
+            word.setTotalShows(word.getRank());
         }
 
         return word;
