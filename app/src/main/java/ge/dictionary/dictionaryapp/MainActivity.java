@@ -2,12 +2,15 @@ package ge.dictionary.dictionaryapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,10 +22,15 @@ import android.widget.TextView;
 import ge.dictionary.dictionaryapp.processor.WordsProcessor;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String filePath = "dictionary.txt";
+    private static final String filePath = "dictionary/dictionary.txt";
+
+    private static final String pronounceDirectoryPath = "dictionary/pronounce/";
 
     private WordsProcessor wordsProcessor;
 
@@ -49,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         wordsProcessor = new WordsProcessor(file);
         word  = wordsProcessor.getRandomWord();
+        playPronounce(word);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -63,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mode == WordViewMode.WORD_EXPLAIN_TRANSLATE) {
                     wordsProcessor.increaseWordTotalShows(word);
                     word = wordsProcessor.getRandomWord();
+                    playPronounce(word);
                 }
 
                 mode = getNextMode(mode);
@@ -79,8 +89,17 @@ public class MainActivity extends AppCompatActivity {
 
                 mode = WordViewMode.WORD;
                 word = wordsProcessor.getRandomWord();
+                playPronounce(word);
 
                 updateView(word, mode);
+            }
+        });
+
+        FloatingActionButton fab = findViewById(R.id.playPronounceButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playPronounce(word);
             }
         });
     }
@@ -100,6 +119,29 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void playPronounce(Word word) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), pronounceDirectoryPath + word.getWord() + ".mp3");
+
+        if (file.exists()) {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                FileDescriptor fileDescriptor = fileInputStream.getFD();
+
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(fileDescriptor);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            alertDialog.setTitle("Warning");
+            alertDialog.setMessage("File not found: " + word.getWord() + ".mp3");
+            alertDialog.show();
+        }
     }
 
     private void updateView(Word word, WordViewMode mode) {
