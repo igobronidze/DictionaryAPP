@@ -14,10 +14,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import ge.dictionary.dictionaryapp.processor.WordsProcessor;
 
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
     private WordViewMode mode = WordViewMode.WORD;
 
+    private boolean randomWordsMode = true;
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filePath);
 
         wordsProcessor = new WordsProcessor(file);
-        word  = wordsProcessor.getRandomWord();
+        word  = wordsProcessor.getWord();
         playPronounce(word);
 
         setContentView(R.layout.activity_main);
@@ -70,8 +73,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mode == WordViewMode.WORD_EXPLAIN_TRANSLATE) {
-                    wordsProcessor.increaseWordTotalShows(word);
-                    word = wordsProcessor.getRandomWord();
+                    if (randomWordsMode) {
+                        wordsProcessor.increaseWordTotalShows(word);
+                    }
+                    word = wordsProcessor.getWord();
                     playPronounce(word);
                 }
 
@@ -85,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
         yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wordsProcessor.increaseWordRankAndTotalShows(word);
+                if (randomWordsMode) {
+                    wordsProcessor.increaseWordRankAndTotalShows(word);
+                }
 
                 mode = WordViewMode.WORD;
-                word = wordsProcessor.getRandomWord();
+                word = wordsProcessor.getWord();
                 playPronounce(word);
 
                 updateView(word, mode);
@@ -107,18 +114,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        Switch randomWordsSwitch = (Switch) menu.findItem(R.id.switch_button).getActionView();
+        randomWordsSwitch.setChecked(true);
+        randomWordsSwitch.setText(ge.dictionary.dictionaryapp.R.string.random_words);
+        randomWordsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                randomWordsMode = isChecked;
+                wordsProcessor.setRandomMode(randomWordsMode);
+
+                mode = WordViewMode.WORD;
+                word = wordsProcessor.getWord();
+                playPronounce(word);
+
+                updateView(word, mode);
+            }
+        });
+
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void playPronounce(Word word) {
