@@ -163,7 +163,11 @@ public class MainActivity extends AppCompatActivity {
         TextView explainTextView = findViewById(R.id.explainTextView);
         TextView translateTextView = findViewById(R.id.translateTextView);
 
-        wordTextView.setText(word.getWord());
+        if (randomWordsMode) {
+            wordTextView.setText(word.getWord());
+        } else {
+            wordTextView.setText(word.getWord() + " (" + word.getRank() + "/" + word.getTotalShows() + ")");
+        }
         explainTextView.setText(word.getExplain());
         translateTextView.setText(word.getTranslate());
 
