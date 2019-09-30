@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -163,13 +164,13 @@ public class MainActivity extends AppCompatActivity {
         TextView explainTextView = findViewById(R.id.explainTextView);
         TextView translateTextView = findViewById(R.id.translateTextView);
 
-        if (randomWordsMode) {
-            wordTextView.setText(word.getWord());
-        } else {
-            wordTextView.setText(word.getWord() + " (" + word.getRank() + "/" + word.getTotalShows() + ")");
-        }
+        wordTextView.setText(word.getWord());
         explainTextView.setText(word.getExplain());
-        translateTextView.setText(word.getTranslate());
+        if (randomWordsMode) {
+            translateTextView.setText(word.getTranslate());
+        } else {
+            translateTextView.setText(word.getTranslate() + " (" + word.getRank() + "/" + word.getTotalShows() + ")");
+        }
 
         switch (mode) {
             case WORD:
@@ -188,6 +189,17 @@ public class MainActivity extends AppCompatActivity {
                 translateTextView.setVisibility(View.VISIBLE);
                 break;
         }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int deviceTotalHeight = metrics.heightPixels;
+
+        wordTextView.setTextSize((float) deviceTotalHeight / 40);
+        explainTextView.setTextSize((float) deviceTotalHeight / 70);
+        translateTextView.setTextSize((float) deviceTotalHeight / 80);
+
+        wordTextView.setPadding(0, deviceTotalHeight / 50, 0, 0);
+        explainTextView.setPadding(0, deviceTotalHeight / 25, 0, 0);
+        translateTextView.setPadding(0, deviceTotalHeight / 25, 0, 0);
     }
 
     private WordViewMode getNextMode(WordViewMode mode) {
